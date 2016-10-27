@@ -1,0 +1,51 @@
+
+# DO NOT DELETE
+
+./StEvtInfo/StEvtInfo_cpp.so: /home/lwen/Analysis/auau200GeV_run11/lambda/code/./StEvtInfo/StEvtInfo.h
+./StEvtInfo/StEvtInfo_cpp.so: /home/lwen/Analysis/auau200GeV_run11/lambda/code/./include/StPriTrkInfo.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TChain.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TTree.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TBranch.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TNamed.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TObject.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/Rtypes.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/RConfig.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/RVersion.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/DllImport.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/Rtypeinfo.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/snprintf.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/strlcpy.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TGenericClassInfo.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TSchemaHelper.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TStorage.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TVersionCheck.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/Riosfwd.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TBuffer.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TString.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TMathBase.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TObjArray.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TSeqCollection.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TCollection.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TIterator.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TAttFill.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TDataType.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TDictionary.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/Property.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/ESTLType.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TAttLine.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TAttMarker.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TArrayD.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TArray.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TArrayI.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TClass.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TObjString.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/ThreadLocalStorage.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/RConfigure.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TVirtualTreePlayer.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TVector2.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local/include/root/TLeaf.h
+./StEvtInfo/StEvtInfo_cpp.so: /home/lwen/Analysis/auau200GeV_run11/lambda/code/./include/constants.h
+./StEvtInfo/StEvtInfo_cpp.so: /home/lwen/Analysis/auau200GeV_run11/lambda/code/./include/StV0TrkInfo.h
+./StEvtInfo/StEvtInfo_cpp.so: /home/lwen/Analysis/auau200GeV_run11/lambda/code/./StRefMultCorr/StRefMultCorr.h
+./StEvtInfo/StEvtInfo_cpp.so: /usr/local//include/root/cintdictversion.h /usr/local//include/root/RVersion.h
+StEvtInfo_cpp__ROOTBUILDVERSION= 5.34/32
