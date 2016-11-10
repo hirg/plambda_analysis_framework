@@ -7,7 +7,7 @@ Email: wenliwen64@ucla.edu / wenliwen64@gmail.com
 ## Contents
 README.md                   --this file
 
-Makefile                    --makefile
+Makefile                    --Makefile
 
 include                     --consist of constants.h StV0TrkInfo.h StPriTrkInfo.h 
 
@@ -23,7 +23,7 @@ StPriKTrkCuts               --kaon track cuts class
 
 StPriPTrkCuts               --proton track cuts class
 
-StPriTrkGeneralCuts         --genral primary cuts class used for event plane reconstruction and so on
+StPriTrkGeneralCuts         --general primary cuts class used for event plane reconstruction and so on
 
 StRefMultCorr               --STAR's centrality definition class
 
