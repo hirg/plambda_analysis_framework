@@ -61,14 +61,32 @@ void StProtonLaGammaMaker::saveWeights0File(std::map<std::string, TH1*>& histmap
         for(int j = 0; j != 2; ++j){
 	    for(int k = 0; k != 2; ++k){
 		for(int l = 0; l != 3; ++l){
+                    // Histograms for trks before corrections
 		    char name[100];
 		    sprintf(name, "h1d_before_Corrections_%s_%s_%s_%sPhi", eta_space[i].c_str(), vz_space[j].c_str(), charge_space[k].c_str(), particle_space[l].c_str());
 		    std::string name_str(name);
 		    histmap[name_str]->Write();
+
+                    // Histograms for alpha/beta trk corrections
+                    if(l < 2){
+			sprintf(name, "prof2_XOrder_YDay_ZPhi_%s_%s_%s_%s", eta_space[i].c_str(), vz_space[j].c_str(), charge_space[k].c_str(), particle_space[l].c_str());
+			name_str = name;
+			histmap[name_str]->Write();
+		    }
 		}
 	    }
 	}
     }
+}
+
+inline
+void StProtonLaGammaMaker::saveWeights1File(map<string, TH1*>& histmap){
+    TFile* weights1File = GetWeights1File();
+    weights1File->cd();
+    ((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_EastEP"])->Write();
+    ((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_WestEP"])->Write();
+    ((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_EastEP"])->Write();
+    ((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_WestEP"])->Write();
 }
 
 inline

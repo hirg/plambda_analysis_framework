@@ -48,7 +48,7 @@ Int_t StCorrelationMaker::Init(){
 
     addTrees();
     m_NEvents = m_Chain->GetEntriesFast();
-    std::cout << ">>>>>>>>>>>>Number of events loaded: " << m_NEvents << "<<<<<<<<<<<<<<<<<<" << std::endl;
+    std::cout << ">>>>>>>>>>>>=======" << m_NEvents << " events loaded======<<<<<<<<<<<<<<<<<<" << std::endl;
 
     if(m_NEvents < m_EventNumberToProcess)
         m_EventNumberToProcess = m_NEvents;
@@ -101,6 +101,8 @@ void StCorrelationMaker::ReconstructEventPlaneWithPhiWeightCorrection(){
 	if(!m_EvtCuts->PassAllCuts(evtInfo)) continue;
 	reconstructSubEventPlaneWithPhiWeightHelper(m_HistsCollection, evtInfo);
     }
+
+    saveWeights1File(m_HistsCollection);
 }
 
 void StCorrelationMaker::ReconstructShiftedSubEventPlane(){

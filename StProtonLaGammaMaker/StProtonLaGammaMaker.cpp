@@ -223,21 +223,21 @@ void StProtonLaGammaMaker::reconstructSubEventPlaneWithPhiWeightHelper(std::map<
     const vector<StV0TrkInfo>& vecLambdaTrks = evtInfo.VecBetaTrks();
     int Day = evtInfo.Day();
     double PVZ = evtInfo.Vz();
-    double EWeight = evtInfo.EWeight(); 
+    double EWeight = evtInfo.EWeight();
 
     for(vector<StPriTrkInfo>::const_iterator iter_pri = vecPriTrks.begin(); iter_pri != vecPriTrks.end(); ++iter_pri){
 	// Get weights
 	Int_t weight_index[3] = {1,};
-	StCorrelationMaker::getWeightsIndex(weight_index, (*iter_pri).eta, PVZ, (*iter_pri).charge);
-        Int_t phiBin = (Int_t)(((*iter_pri).phi + PI) / 2. / PI * phiBins);
+        StPriTrkInfo trk_info = *iter_pri;
+	StCorrelationMaker::getWeightsIndex(weight_index, trk_info.eta, PVZ, trk_info.charge);
+        Int_t phiBin = (Int_t)((trk_info.phi + PI) / 2. / PI * phiBins);
         //std::cout << "phiBin = " << phiBin << std::endl;
         Float_t phiWeight = m_PrimaryTracksPhiWeight[weight_index[0]][weight_index[1]][weight_index[2]][phiBin];
-        //trk.phiWeight = phiWeight;//TODO
 
 
 	//TODO:
         //if(m_ProtonTrkCuts->PassAllCuts(*iter_pri)) continue;
-        if(!m_PriTrkCuts->PassAllCuts(*iter_pri)) continue;
+        if(!m_PriTrkCuts->PassAllCuts(*iter_pri)) continue; // we will take out the ones when do correlation computation
 
         // Check if or not already excluded lambda daughters
 	/*
@@ -254,7 +254,7 @@ void StProtonLaGammaMaker::reconstructSubEventPlaneWithPhiWeightHelper(std::map<
 	    continue;
 	*/
 
-        trkVec.push_back(pair<double, StPriTrkInfo>(phiWeight, *iter_pri));
+        trkVec.push_back(pair<double, StPriTrkInfo>(phiWeight, trk_info));
     }//TODO: double check this loop
 
     std::random_shuffle(trkVec.begin(), trkVec.end());
@@ -283,10 +283,10 @@ void StProtonLaGammaMaker::reconstructSubEventPlaneWithPhiWeightHelper(std::map<
 
     //std::cout << "DEBUG: Day = " << Day << endl;
     for(Int_t i = 0; i < order; ++i){
-	((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_EastEP"])->Fill(2 * i + 1, Day, cos(2 * (i + 1) * TPC_RawTPCEPPhi_east));
-	((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_WestEP"])->Fill(2 * i + 1, Day, cos(2 * (i + 1) * TPC_RawTPCEPPhi_west));
-	((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_EastEP"])->Fill(2 * i + 2, Day, sin(2 * (i + 1) * TPC_RawTPCEPPhi_east));
-	((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_WestEP"])->Fill(2 * i + 2, Day, sin(2 * (i + 1) * TPC_RawTPCEPPhi_west));
+	((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_EastEP"])->Fill(2 * i + 1, Day, cos(2 * (i + 1) * TPC_RawTPCEPPhi_east), EWeight);
+	((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_WestEP"])->Fill(2 * i + 1, Day, cos(2 * (i + 1) * TPC_RawTPCEPPhi_west), EWeight);
+	((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_EastEP"])->Fill(2 * i + 2, Day, sin(2 * (i + 1) * TPC_RawTPCEPPhi_east), EWeight);
+	((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_WestEP"])->Fill(2 * i + 2, Day, sin(2 * (i + 1) * TPC_RawTPCEPPhi_west), EWeight);
     }
 }
 
@@ -365,6 +365,9 @@ void StProtonLaGammaMaker::reconstructShiftedSubEventPlaneHelper(std::map<std::s
     Float_t UnshiftedTPCEPPhi_east = .5 * mQ1.Phi(); // Not really east, just one half of total tracks
     Float_t UnshiftedTPCEPPhi_west = .5 * mQ2.Phi();
 
+    ((TH1F*)histMap["h1f_before_Flattened_EastEPPhi"])->Fill(UnshiftedTPCEPPhi_east, EWeight); 
+    ((TH1F*)histMap["h1f_before_Flattened_WestEPPhi"])->Fill(UnshiftedTPCEPPhi_west, EWeight); 
+ 
     Float_t ShiftedTPCEPPhi_east = UnshiftedTPCEPPhi_east;
     Float_t ShiftedTPCEPPhi_west = UnshiftedTPCEPPhi_west;
 
@@ -378,19 +381,25 @@ void StProtonLaGammaMaker::reconstructShiftedSubEventPlaneHelper(std::map<std::s
     if(ShiftedTPCEPPhi_west > PI) ShiftedTPCEPPhi_west -= PI;
     if(ShiftedTPCEPPhi_west < 0) ShiftedTPCEPPhi_west += PI;
 
+    // Subevent Flat check
+    ((TH1F*)histMap["h1f_Flattened_EastEPPhi"])->Fill(ShiftedTPCEPPhi_east, EWeight);
+    ((TH1F*)histMap["h1f_Flattened_WestEPPhi"])->Fill(ShiftedTPCEPPhi_west, EWeight);
+
     // Combine to form full ep 
     mQx = mQ1.Mod() * cos(2 * ShiftedTPCEPPhi_east) + mQ2.Mod() * cos(2 * ShiftedTPCEPPhi_west);
     mQy = mQ1.Mod() * sin(2 * ShiftedTPCEPPhi_east) + mQ2.Mod() * sin(2 * ShiftedTPCEPPhi_west);
     mQ.Set(mQx, mQy);
     Float_t SubEPShiftedTPCEPPhi_full = .5 * mQ.Phi();
     for(Int_t i = 0; i < order; ++i){
-	((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_FullEP"])->Fill(2 * i + 1, Day, cos(2 * (i + 1) * SubEPShiftedTPCEPPhi_full));
-	((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_FullEP"])->Fill(2 * i + 2, Day, sin(2 * (i + 1) * SubEPShiftedTPCEPPhi_full));
+	((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_FullEP"])->Fill(2 * i + 1, Day, cos(2 * (i + 1) * SubEPShiftedTPCEPPhi_full), EWeight);
+	((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_FullEP"])->Fill(2 * i + 2, Day, sin(2 * (i + 1) * SubEPShiftedTPCEPPhi_full), EWeight);
     }
 
+    // Full event plane before correction
+    ((TH1F*)histMap["h1f_before_Flattened_FullEPPhi"])->Fill(UnshiftedTPCEPPhi_Full, EWeight);
     // Event resolution histogram
     ((TProfile*)histMap["profile_eventplane_resolution"])->Fill(1, 100 * cos(2 * (ShiftedTPCEPPhi_east - ShiftedTPCEPPhi_west)), EWeight);
-    ((TProfile*)histMap["profile_eventplane_resolution_noEW"])->Fill(1, 100 * cos(2 * (ShiftedTPCEPPhi_east - ShiftedTPCEPPhi_west)));
+    //((TProfile*)histMap["profile_eventplane_resolution_noEW"])->Fill(1, 100 * cos(2 * (ShiftedTPCEPPhi_east - ShiftedTPCEPPhi_west)));
 }
 
 // Reconstruct full event plane
@@ -435,6 +444,7 @@ void StProtonLaGammaMaker::reconstructShiftedFullEventPlaneHelper(std::map<std::
         //std::cout << "<------- End reconstructing shifted full event plane helper loop! ---------->" << std::endl;
     }
 
+/*
     std::random_shuffle(trkVec.begin(), trkVec.end());
     Long_t size_trkvec = trkVec.size();
 
@@ -505,12 +515,12 @@ void StProtonLaGammaMaker::reconstructShiftedFullEventPlaneHelper(std::map<std::
     // Combine to form full ep 
     mQx = mQ1.Mod() * cos(2 * ShiftedTPCEPPhi_east) + mQ2.Mod() * cos(2 * ShiftedTPCEPPhi_west);
     mQy = mQ1.Mod() * sin(2 * ShiftedTPCEPPhi_east) + mQ2.Mod() * sin(2 * ShiftedTPCEPPhi_west);
+*/
     mQ.Set(mQx, mQy);
     Float_t UnshiftedTPCEPPhi_Full = .5 * mQ.Phi(); 
 
     Float_t correction_full = 0;
 
-    ((TH1F*)histMap["h1f_before_Flattened_FullEPPhi"])->Fill(UnshiftedTPCEPPhi_Full, EWeight);
     for(Int_t i = 0; i < order; ++i)
         correction_full += 2 * (-shift_correction_full[2 * i + 1] * cos(2 * (i + 1) * UnshiftedTPCEPPhi_Full) + shift_correction_full[2 * i] * sin(2 * (i + 1) * UnshiftedTPCEPPhi_Full)) / (Float_t)(2 * i + 2); 
 
@@ -815,8 +825,6 @@ void StProtonLaGammaMaker::fillPrimaryTracksPhiHists(std::map<std::string, TH1*>
 	}
 	if(kUse == 1) continue;
 
-        //cout << "happy so far in fill primary" << endl;
-        
         if(m_ProtonTrkCuts->PassAllCuts(*iter_pri)) continue; // It is a proton?
 	if(!m_PriTrkCuts->PassAllCuts(*iter_pri)) continue; // Satisfy other kinematic cuts
 
