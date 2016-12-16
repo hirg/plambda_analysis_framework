@@ -36,14 +36,20 @@ class StProtonLaGammaMaker: public StCorrelationMaker{
 	virtual void addAdditionalBetaHists(std::map<std::string, TH1*>& histMap);
         virtual void addCorrelationHists(std::map<std::string, TH1*>& histMap); 
 
-        virtual void computePhiWeightsHelper(Int_t idx1, Int_t idx2, Int_t idx3, Char_t particle, std::map<std::string, TH1*>& histMap);
-
         virtual void reconstructSubEventPlaneWithPhiWeightHelper(std::map<std::string, TH1*>& hsitMap, const StEvtInfo& evtInfo);
         virtual void reconstructShiftedSubEventPlaneHelper(std::map<std::string, TH1*>& hsitMap, const StEvtInfo& evtInfo);
         virtual void reconstructShiftedFullEventPlaneHelper(std::map<std::string, TH1*>& hsitMap, const StEvtInfo& evtInfo, TVector2& shiftedepphi_full);
         virtual void computeCorrelatorsHelper(std::map<std::string, TH1*>& hsitMap, const StEvtInfo& evtInfo, TVector2 shiftedepphi_full);
 
+        virtual void saveWeights0File();
+        virtual void saveWeights1File();
+        virtual void saveWeights2File();
 };
+
+inline 
+void saveWeights0File(){
+    std::string name = getCorrectionHistName();
+}
 
 inline
 std::string StProtonLaGammaMaker::getCorrectionHistName(std::string particle, Float_t Eta, Float_t PVZ, Float_t Charge, char option) const{

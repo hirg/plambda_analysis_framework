@@ -9,11 +9,12 @@ struct StV0TrkInfo{// nHits
     StV0TrkInfo(){}
     StV0TrkInfo(TChain* chain, float charge, int idx){
 	pt = chain->GetLeaf("fW0s.mPtglobalW0")->GetValue(idx);
-        px = chain->GetLeaf("fW0s.mPxglobalW0")->GetValue(idx);
-        py = chain->GetLeaf("fW0s.mPyglobalW0")->GetValue(idx);
-        pz = chain->GetLeaf("fW0s.mPzglobalW0")->GetValue(idx);
+        px = chain->GetLeaf("fW0s.mPxglobalW0")->GetValue(idx); // Reconstructed Lambda px
+        py = chain->GetLeaf("fW0s.mPyglobalW0")->GetValue(idx); // Reconstructed Lambda py
+        pz = chain->GetLeaf("fW0s.mPzglobalW0")->GetValue(idx); // Reconstructed Lambda pz
 	eta = chain->GetLeaf("fW0s.mEtaW0")->GetValue(idx);
         mass = chain->GetLeaf("fW0s.mMassW0")->GetValue(idx);    
+
         nsigma_dau1 = chain->GetLeaf("fW0s.mDau1nSigmaW0")->GetValue(idx);
         nsigma_dau2 = chain->GetLeaf("fW0s.mDau2nSigmaW0")->GetValue(idx);
         id_dau1 = chain->GetLeaf("fW0s.mDau1idW0")->GetValue(idx);
@@ -26,37 +27,33 @@ struct StV0TrkInfo{// nHits
 	pt_dau2 = chain->GetLeaf("fW0s.mDau2ptW0")->GetValue(idx);
 	eta_dau1 = chain->GetLeaf("fW0s.mDau1etaW0")->GetValue(idx);
 	eta_dau2 = chain->GetLeaf("fW0s.mDau2etaW0")->GetValue(idx);
-        dca_dau1 = chain->GetLeaf("fW0s.mDau1dcaW0")->GetValue(idx); 
-        dca_dau2 = chain->GetLeaf("fW0s.mDau2dcaW0")->GetValue(idx); 
+        dca_dau1 = chain->GetLeaf("fW0s.mDau1dcaW0")->GetValue(idx);
+        dca_dau2 = chain->GetLeaf("fW0s.mDau2dcaW0")->GetValue(idx);
 	prmatch_dau1 = chain->GetLeaf("fW0s.mDau1PrMatchW0")->GetValue(idx);
 	prmatch_dau2 = chain->GetLeaf("fW0s.mDau2PrMatchW0")->GetValue(idx);
         dca1to2 = chain->GetLeaf("fW0s.mDca1to2W0")->GetValue(idx);
 
-        TVector2 phi2;
-        phi2.Set(px, py); 
-        phi = phi2.Phi();
+        TVector3 phi3;
+        phi3.Set(px, py, pz); 
+        phi = phi3.Phi();
 	SetCharge(charge); // TODO: For Lambda Only
-	if(phi > PI) phi -= 2 * PI;
-	if(phi < -PI) phi += 2 * PI;
 
-        TVector2 vec2_dau1(chain->GetLeaf("fW0s.mDau1pxW0")->GetValue(idx),
-	                   chain->GetLeaf("fW0s.mDau1pyW0")->GetValue(idx));
-	phi_dau1 = vec2_dau1.Phi();
-	if(phi_dau1 > PI) phi_dau1 -= 2 * PI;
-	if(phi_dau1 < -PI) phi_dau1 += 2 * PI;
+        TVector3 vec3_dau1(chain->GetLeaf("fW0s.mDau1pxW0")->GetValue(idx),
+	                   chain->GetLeaf("fW0s.mDau1pyW0")->GetValue(idx),
+                           chain->GetLeaf("fW0s.mDau1pzW0")->GetValue(idx));
+	phi_dau1 = vec3_dau1.Phi();
 
-        TVector2 vec2_dau2(chain->GetLeaf("fW0s.mDau2pxW0")->GetValue(idx),
-	                   chain->GetLeaf("fW0s.mDau2pyW0")->GetValue(idx));
-	phi_dau2 = vec2_dau2.Phi();
-	if(phi_dau2 > PI) phi_dau2 -= 2 * PI;
-	if(phi_dau2 < -PI) phi_dau2 += 2 * PI;
+        TVector3 vec3_dau2(chain->GetLeaf("fW0s.mDau2pxW0")->GetValue(idx),
+	                   chain->GetLeaf("fW0s.mDau2pyW0")->GetValue(idx),
+                           chain->GetLeaf("fW0s.mDau2pzW0")->GetValue(idx));
+	phi_dau2 = vec3_dau2.Phi();
     }
 
     void SetCharge(int charge_) { charge = charge_; }
 
     float pt;
     float px;
-    float py; 
+    float py;
     float pz;
     float eta;
     float mass;
@@ -80,6 +77,6 @@ struct StV0TrkInfo{// nHits
     int prmatch_dau2;
     float dca1to2;
     float phi; 
-    float charge;
+    float charge; // Could be baryonic charge if it is electrically neutral
 };
 #endif

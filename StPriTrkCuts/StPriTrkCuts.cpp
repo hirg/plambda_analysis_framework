@@ -22,8 +22,8 @@ bool StPriTrkCuts::PassNHitsCuts(const StPriTrkInfo& p) const{
 
 bool StPriTrkCuts::PassChargeCuts(const StPriTrkInfo& p) const{
     //for(set<int>::const_iterator iter = ChargeCuts().begin(); iter != ChargeCuts().end(); iter++){
-     //   if(p.charge == *iter)
-     //      return true;
+    //    if(p.charge == *iter)
+    //       return true;
     //}
     //return false;
 }
@@ -37,10 +37,9 @@ bool StPriTrkCuts::PassAllCuts(const StPriTrkInfo& p) const{
     return PassEtaCuts(p) 
         && PassPtCuts(p)
         && PassDcaCuts(p)
-	//&& PassChargeCuts(p)
 	&& PassFlagCuts(p)
-	//&& PassNHitsCuts(p)
 	&& PassPIDCuts(p); 
+	//&& PassNHitsCuts(p) // This is already done in picodst production
 }
 
 bool StPriTrkCuts::PassAllCuts(const StV0TrkInfo& v0, int no_dau) const{

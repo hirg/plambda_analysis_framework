@@ -225,7 +225,7 @@ void StProtonLaGammaMaker::reconstructSubEventPlaneWithPhiWeightHelper(std::map<
     double PVZ = evtInfo.Vz();
     double EWeight = evtInfo.EWeight(); 
 
-    for(vector<StPriTrkInfo>::const_iterator iter_pri = vecPriTrks.begin(); iter_pri != vecPriTrks.end(); iter_pri++){
+    for(vector<StPriTrkInfo>::const_iterator iter_pri = vecPriTrks.begin(); iter_pri != vecPriTrks.end(); ++iter_pri){
 	// Get weights
 	Int_t weight_index[3] = {1,};
 	StCorrelationMaker::getWeightsIndex(weight_index, (*iter_pri).eta, PVZ, (*iter_pri).charge);
@@ -261,7 +261,7 @@ void StProtonLaGammaMaker::reconstructSubEventPlaneWithPhiWeightHelper(std::map<
     Long_t size_trkvec = trkVec.size();
 
     Float_t mQx = 0., mQy = 0., mQx1 = 0., mQy1 = 0., mQx2 = 0., mQy2 = 0.; // Full, east, west event planes
-    for(Long_t i = 0; i < size_trkvec; i++){
+    for(Long_t i = 0; i < size_trkvec; ++i){
         if(i > size_trkvec / 2){
             mQx1 += trkVec[i].first * trkVec[i].second.pt * cos(2. * trkVec[i].second.phi);
             mQy1 += trkVec[i].first * trkVec[i].second.pt * sin(2. * trkVec[i].second.phi);
@@ -282,7 +282,7 @@ void StProtonLaGammaMaker::reconstructSubEventPlaneWithPhiWeightHelper(std::map<
     Float_t TPC_RawTPCEPPhi_west = .5 * mQ2.Phi();
 
     //std::cout << "DEBUG: Day = " << Day << endl;
-    for(Int_t i = 0; i < order; i++){
+    for(Int_t i = 0; i < order; ++i){
 	((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_EastEP"])->Fill(2 * i + 1, Day, cos(2 * (i + 1) * TPC_RawTPCEPPhi_east));
 	((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_WestEP"])->Fill(2 * i + 1, Day, cos(2 * (i + 1) * TPC_RawTPCEPPhi_west));
 	((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_EastEP"])->Fill(2 * i + 2, Day, sin(2 * (i + 1) * TPC_RawTPCEPPhi_east));
@@ -303,7 +303,7 @@ void StProtonLaGammaMaker::reconstructShiftedSubEventPlaneHelper(std::map<std::s
     int Day = evtInfo.Day();
     int Day2 = evtInfo.Day2();
     int Day3 = evtInfo.Day3();
-    for(vector<StPriTrkInfo>::const_iterator iter_pri = vecPriTrks.begin(); iter_pri != vecPriTrks.end(); iter_pri++){
+    for(vector<StPriTrkInfo>::const_iterator iter_pri = vecPriTrks.begin(); iter_pri != vecPriTrks.end(); ++iter_pri){
         // Get weights
 	Int_t weight_index[3] = {1,};
 	StCorrelationMaker::getWeightsIndex(weight_index, (*iter_pri).eta, PVZ, (*iter_pri).charge);
@@ -316,7 +316,7 @@ void StProtonLaGammaMaker::reconstructShiftedSubEventPlaneHelper(std::map<std::s
         // Check if or not already excluded lambda daughters
 	/*
 	Bool_t kUse = 0;
-        for(vector<StV0TrkInfo>::const_iterator iter_la = vecLambdaTrks.begin(); iter_la != vecLambdaTrks.end(); iter_la++){
+        for(vector<StV0TrkInfo>::const_iterator iter_la = vecLambdaTrks.begin(); iter_la != vecLambdaTrks.end(); ++iter_la){
             Int_t dau1id = (Int_t)(*iter_la).id_dau1;
             Int_t dau2id = (Int_t)(*iter_la).id_dau2;
             if(dau1id == (*iter_pri).id || dau2id == (*iter_pri).id){
@@ -333,7 +333,7 @@ void StProtonLaGammaMaker::reconstructShiftedSubEventPlaneHelper(std::map<std::s
     std::random_shuffle(trkVec.begin(), trkVec.end());
     Long_t size_trkvec = trkVec.size();
 
-    for(Int_t i = 0; i < size_trkvec; i++){
+    for(Int_t i = 0; i < size_trkvec; ++i){
         if(i > size_trkvec / 2){
             mQx1 += trkVec[i].first * trkVec[i].second.pt * cos(2. * trkVec[i].second.phi);
             mQy1 += trkVec[i].first * trkVec[i].second.pt * sin(2. * trkVec[i].second.phi);
@@ -349,7 +349,7 @@ void StProtonLaGammaMaker::reconstructShiftedSubEventPlaneHelper(std::map<std::s
     // Shifting correction up to 4th order, odd-cos, even-sin
     Double_t shift_correction_east[correction_terms], shift_correction_west[correction_terms], shift_correction_full[correction_terms]; 
     Int_t DayBin =  ((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_FullEP"])->GetYaxis()->FindBin(Day);
-    for(Int_t i = 0; i < order; i++){
+    for(Int_t i = 0; i < order; ++i){
 	shift_correction_full[2 * i] = ((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_FullEP"])->GetBinContent(2 * i + 1, DayBin);
 	shift_correction_east[2 * i] = ((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_EastEP"])->GetBinContent(2 * i + 1, DayBin);
 	shift_correction_west[2 * i] = ((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_WestEP"])->GetBinContent(2 * i + 1, DayBin);
@@ -368,7 +368,7 @@ void StProtonLaGammaMaker::reconstructShiftedSubEventPlaneHelper(std::map<std::s
     Float_t ShiftedTPCEPPhi_east = UnshiftedTPCEPPhi_east;
     Float_t ShiftedTPCEPPhi_west = UnshiftedTPCEPPhi_west;
 
-    for(Int_t i = 0; i < order; i++){
+    for(Int_t i = 0; i < order; ++i){
         ShiftedTPCEPPhi_east += 2 * (-shift_correction_east[2 * i + 1] * cos(2 * (i + 1) * UnshiftedTPCEPPhi_east) + shift_correction_east[2 * i] * sin(2 * (i + 1) * UnshiftedTPCEPPhi_east)) / (Float_t)(2 * i + 2); 
         ShiftedTPCEPPhi_west += 2 * (-shift_correction_west[2 * i + 1] * cos(2 * (i + 1) * UnshiftedTPCEPPhi_west) + shift_correction_west[2 * i] * sin(2 * (i + 1) * UnshiftedTPCEPPhi_west)) / (Float_t)(2 * i + 2); 
     }
@@ -383,7 +383,7 @@ void StProtonLaGammaMaker::reconstructShiftedSubEventPlaneHelper(std::map<std::s
     mQy = mQ1.Mod() * sin(2 * ShiftedTPCEPPhi_east) + mQ2.Mod() * sin(2 * ShiftedTPCEPPhi_west);
     mQ.Set(mQx, mQy);
     Float_t SubEPShiftedTPCEPPhi_full = .5 * mQ.Phi();
-    for(Int_t i = 0; i < order; i++){
+    for(Int_t i = 0; i < order; ++i){
 	((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_FullEP"])->Fill(2 * i + 1, Day, cos(2 * (i + 1) * SubEPShiftedTPCEPPhi_full));
 	((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_FullEP"])->Fill(2 * i + 2, Day, sin(2 * (i + 1) * SubEPShiftedTPCEPPhi_full));
     }
@@ -406,7 +406,7 @@ void StProtonLaGammaMaker::reconstructShiftedFullEventPlaneHelper(std::map<std::
     int Day = evtInfo.Day();
     int Day2 = evtInfo.Day2();
     int Day3 = evtInfo.Day3();
-    for(vector<StPriTrkInfo>::const_iterator iter_pri = vecPriTrks.begin(); iter_pri != vecPriTrks.end(); iter_pri++){
+    for(vector<StPriTrkInfo>::const_iterator iter_pri = vecPriTrks.begin(); iter_pri != vecPriTrks.end(); ++iter_pri){
         // Get weights
 	Int_t weight_index[3] = {1,};
 	StCorrelationMaker::getWeightsIndex(weight_index, (*iter_pri).eta, PVZ, (*iter_pri).charge);
@@ -419,7 +419,7 @@ void StProtonLaGammaMaker::reconstructShiftedFullEventPlaneHelper(std::map<std::
 	// Check if or not already excluded lambda daughters
 	/*
 	Bool_t kUse = 0;
-        for(vector<StV0TrkInfo>::const_iterator iter_la = vecLambdaTrks.begin(); iter_la != vecLambdaTrks.end(); iter_la++){
+        for(vector<StV0TrkInfo>::const_iterator iter_la = vecLambdaTrks.begin(); iter_la != vecLambdaTrks.end(); ++iter_la){
             Int_t dau1id = (Int_t)(*iter_la).id_dau1;
             Int_t dau2id = (Int_t)(*iter_la).id_dau2;
             if(dau1id == (*iter_pri).id || dau2id == (*iter_pri).id){
@@ -439,7 +439,7 @@ void StProtonLaGammaMaker::reconstructShiftedFullEventPlaneHelper(std::map<std::
     Long_t size_trkvec = trkVec.size();
 
     //std::cout << size_trkvec << " is the size of vector!" << std::endl;
-    for(Int_t i = 0; i < size_trkvec; i++){
+    for(Int_t i = 0; i < size_trkvec; ++i){
         if(i > size_trkvec / 2){
             mQx1 += trkVec[i].first * trkVec[i].second.pt * cos(2. * trkVec[i].second.phi);
             mQy1 += trkVec[i].first * trkVec[i].second.pt * sin(2. * trkVec[i].second.phi);
@@ -457,7 +457,7 @@ void StProtonLaGammaMaker::reconstructShiftedFullEventPlaneHelper(std::map<std::
     Int_t DayBin = ((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_FullEP"])->GetYaxis()->FindBin(Day);
 
     //cout << DayBin << " DayBin" << endl;
-    for(Int_t i = 0; i < order; i++){
+    for(Int_t i = 0; i < order; ++i){
 	shift_correction_full[2 * i] = ((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_FullEP"])->GetBinContent(2 * i + 1, DayBin);
 	shift_correction_east[2 * i] = ((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_EastEP"])->GetBinContent(2 * i + 1, DayBin);
 	shift_correction_west[2 * i] = ((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_WestEP"])->GetBinContent(2 * i + 1, DayBin);
@@ -480,7 +480,7 @@ void StProtonLaGammaMaker::reconstructShiftedFullEventPlaneHelper(std::map<std::
     ((TH1F*)histMap["h1f_before_Flattened_EastEPPhi"])->Fill(UnshiftedTPCEPPhi_east, EWeight); 
     ((TH1F*)histMap["h1f_before_Flattened_WestEPPhi"])->Fill(UnshiftedTPCEPPhi_west, EWeight); 
     
-    for(Int_t i = 0; i < order; i++){
+    for(Int_t i = 0; i < order; ++i){
         //ShiftedTPCEPPhi_east += 2 * (-shift_correction_east[2 * i + 1] * cos(2 * UnshiftedTPCEPPhi_east) + shift_correction_east[2 * i] * sin(2 * UnshiftedTPCEPPhi_east)) / (Float_t)(2 * i + 2); 
         correction_east += 2 * (-shift_correction_east[2 * i + 1] * cos(2 * (i + 1) * UnshiftedTPCEPPhi_east) + shift_correction_east[2 * i] * sin(2 * (i + 1) * UnshiftedTPCEPPhi_east)) / (Float_t)(2 * i + 2); 
 	//std::cout << "DEBUG: shift_correction_east = " << shift_correction_east[2 * i + 1] << ", correction_east = " << shift_correction_east[2 * i + 1] << std::endl;
@@ -511,7 +511,7 @@ void StProtonLaGammaMaker::reconstructShiftedFullEventPlaneHelper(std::map<std::
     Float_t correction_full = 0;
 
     ((TH1F*)histMap["h1f_before_Flattened_FullEPPhi"])->Fill(UnshiftedTPCEPPhi_Full, EWeight);
-    for(Int_t i = 0; i < order; i++)
+    for(Int_t i = 0; i < order; ++i)
         correction_full += 2 * (-shift_correction_full[2 * i + 1] * cos(2 * (i + 1) * UnshiftedTPCEPPhi_Full) + shift_correction_full[2 * i] * sin(2 * (i + 1) * UnshiftedTPCEPPhi_Full)) / (Float_t)(2 * i + 2); 
 
     double newFullTPCEPPhi = UnshiftedTPCEPPhi_Full + correction_full;
@@ -538,7 +538,7 @@ void StProtonLaGammaMaker::computeCorrelatorsHelper(std::map<std::string, TH1*>&
     int Day = evtInfo.Day();
     int Day2 = evtInfo.Day2();
     int Day3 = evtInfo.Day3();
-    for(vector<StV0TrkInfo>::const_iterator iter_la = vecLambdaTrks.begin(); iter_la != vecLambdaTrks.end(); iter_la++){
+    for(vector<StV0TrkInfo>::const_iterator iter_la = vecLambdaTrks.begin(); iter_la != vecLambdaTrks.end(); ++iter_la){
 
         if(!m_LambdaTrkCuts->PassAllCuts(*iter_la)) continue;
 	std::string name = getCorrectionHistName("Beta", (*iter_la).eta, PVZ, 1., 'c');// Note: pay attention to fillBetaHists()
@@ -548,7 +548,7 @@ void StProtonLaGammaMaker::computeCorrelatorsHelper(std::map<std::string, TH1*>&
 	((TH1F*)histMap["h1f_before_Corrections_BetaPhi"])->Fill((*iter_la).phi, EWeight);
     
 	Int_t Day2Bin =  ((TProfile2D*)histMap[name])->GetYaxis()->FindBin(Day2);
-	for(Int_t kk = 0; kk < order; kk++){
+	for(Int_t kk = 0; kk < order; ++kk){
 	    shift_Lambda[2 * kk] = ((TProfile2D*)histMap.find(name)->second)->GetBinContent(2 * kk + 1, Day2Bin);
 	    shift_Lambda[2 * kk + 1] = ((TProfile2D*)histMap.find(name)->second)->GetBinContent(2 * kk + 2, Day2Bin);
 	    shiftedLambdaPhi += (-2 * shift_Lambda[2 * kk + 1] * cos((kk + 1) * (*iter_la).phi) / (kk + 1) + 2 * shift_Lambda[2 * kk] * sin((kk + 1) * (*iter_la).phi) / (kk + 1));
@@ -598,10 +598,10 @@ void StProtonLaGammaMaker::computeCorrelatorsHelper(std::map<std::string, TH1*>&
 	((TProfile*)histMap["profile_XPt_Yv2_LambdaWeighted"])->Fill((*iter_la).pt, 100 * cos(2 * (shiftedLambdaPhi - fullep.Phi() * .5)), EWeight);     
     }
 
-    for(vector<StPriTrkInfo>::const_iterator iter_pri = vecPriTrks.begin(); iter_pri != vecPriTrks.end(); iter_pri++){
+    for(vector<StPriTrkInfo>::const_iterator iter_pri = vecPriTrks.begin(); iter_pri != vecPriTrks.end(); ++iter_pri){
         StPriTrkInfo pritrk = *iter_pri;
         Bool_t kUse = 0;
-        for(vector<StV0TrkInfo>::const_iterator iter_la = vecLambdaTrks.begin(); iter_la != vecLambdaTrks.end(); iter_la++){
+        for(vector<StV0TrkInfo>::const_iterator iter_la = vecLambdaTrks.begin(); iter_la != vecLambdaTrks.end(); ++iter_la){
             if(pritrk.id == (*iter_la).id_dau1 || pritrk.id == (*iter_la).id_dau2){
                 kUse = 1;
                 break;
@@ -626,7 +626,7 @@ void StProtonLaGammaMaker::computeCorrelatorsHelper(std::map<std::string, TH1*>&
 	    ((TH1F*)histMap["h1f_before_Corrections_AlphaPhi"])->Fill((*iter_pri).phi, EWeight);
 
 	    Int_t Day2Bin =  ((TProfile2D*)histMap[name])->GetYaxis()->FindBin(Day2);
-	    for(Int_t kk = 0; kk < order; kk++){
+	    for(Int_t kk = 0; kk < order; ++kk){
                 //std::cout << kk << "th order in proton" << std::endl;
 		shift_proton[2 * kk] = ((TProfile2D*)histMap.find(name)->second)->GetBinContent(2 * kk + 1, Day2Bin);
 		shift_proton[2 * kk + 1] = ((TProfile2D*)histMap.find(name)->second)->GetBinContent(2 * kk + 2, Day2Bin);
@@ -660,7 +660,7 @@ void StProtonLaGammaMaker::computeCorrelatorsHelper(std::map<std::string, TH1*>&
             Float_t Charge_Proton = pritrk.charge;
 
 	    //std::cout << "before NLambda loop" << std::endl;
-	    for(vector<StV0TrkInfo>::const_iterator iter_la = vecLambdaTrks.begin(); iter_la != vecLambdaTrks.end(); iter_la++){
+	    for(vector<StV0TrkInfo>::const_iterator iter_la = vecLambdaTrks.begin(); iter_la != vecLambdaTrks.end(); ++iter_la){
                 if(!m_LambdaTrkCuts->PassAllCuts(*iter_la)) continue; 
 		std::string name = getCorrectionHistName("Beta", (*iter_la).eta, PVZ, (*iter_la).charge, 'c');
 		Float_t shift_Lambda[correction_terms];
@@ -669,7 +669,7 @@ void StProtonLaGammaMaker::computeCorrelatorsHelper(std::map<std::string, TH1*>&
                 ((TH1F*)histMap["h1f_before_Corrections_BetaPhi"])->Fill((*iter_la).phi, EWeight);
 
 		Day2Bin =  ((TProfile2D*)histMap[name])->GetYaxis()->FindBin(Day2);
-		for(Int_t kk = 0; kk < order; kk++){
+		for(Int_t kk = 0; kk < order; ++kk){
 		    shift_Lambda[2 * kk] = ((TProfile2D*)histMap.find(name)->second)->GetBinContent(2 * kk + 1, Day2Bin);
 		    shift_Lambda[2 * kk + 1] = ((TProfile2D*)histMap.find(name)->second)->GetBinContent(2 * kk + 2, Day2Bin);
 		    shiftedLambdaPhi += (-2 * shift_Lambda[2 * kk + 1] * cos((kk + 1) * (*iter_la).phi) / (kk + 1) + 2 * shift_Lambda[2 * kk] * sin((kk + 1) * (*iter_la).phi) / (kk + 1));
@@ -795,21 +795,19 @@ void StProtonLaGammaMaker::computeCorrelatorsHelper(std::map<std::string, TH1*>&
 
 void StProtonLaGammaMaker::fillPrimaryTracksPhiHists(std::map<std::string, TH1*>& histMap, const StEvtInfo& evtInfo){ // Exclude correlation protons or Lambda daughters
     Int_t NTracks = (Int_t)evtInfo.NPTracks();
-    const vector<StPriTrkInfo> vecPriTrks = evtInfo.VecPriTrks(); 
-    const vector<StV0TrkInfo> vecLambdaTrks = evtInfo.VecBetaTrks();
+    const vector<StPriTrkInfo>& vecPriTrks = evtInfo.VecPriTrks(); 
+    const vector<StV0TrkInfo>& vecLambdaTrks = evtInfo.VecBetaTrks();
 
     double EWeight = evtInfo.EWeight();
     double PVZ = evtInfo.Vz();
-    double Day = evtInfo.Day();
-    double Day2 = evtInfo.Day2();
-    double Day3 = evtInfo.Day3();
+
     for(vector<StPriTrkInfo>::const_iterator iter_pri = vecPriTrks.begin(); 
-	    iter_pri != vecPriTrks.end(); iter_pri++){
+	    iter_pri != vecPriTrks.end(); ++iter_pri){
 
         StPriTrkInfo pritrk = *iter_pri;
 	Bool_t kUse = 0; // Eliminate Lambda daughters
         for(vector<StV0TrkInfo>::const_iterator iter_la = vecLambdaTrks.begin(); 
-		iter_la != vecLambdaTrks.end(); iter_la++){
+		iter_la != vecLambdaTrks.end(); ++iter_la){
             if((*iter_pri).id == (*iter_la).id_dau1 || (*iter_pri).id == (*iter_la).id_dau2){
                 kUse = 1; 
                 break;
@@ -818,28 +816,30 @@ void StProtonLaGammaMaker::fillPrimaryTracksPhiHists(std::map<std::string, TH1*>
 	if(kUse == 1) continue;
 
         //cout << "happy so far in fill primary" << endl;
-        if(m_ProtonTrkCuts->PassAllCuts(*iter_pri)) continue;
-	if(!m_PriTrkCuts->PassAllCuts(*iter_pri)) continue;
+        
+        if(m_ProtonTrkCuts->PassAllCuts(*iter_pri)) continue; // It is a proton?
+	if(!m_PriTrkCuts->PassAllCuts(*iter_pri)) continue; // Satisfy other kinematic cuts
+
 	std::string name = getCorrectionHistName("PrimaryTrk", pritrk.eta, PVZ, pritrk.charge, 'b');
-	    //std::string name = getCorrectionHistName("Alpha", Eta, PVZ, Charge, 'b');
-	((TH1D*)(histMap.find(name)->second))->Fill(pritrk.phi, EWeight);
+	((TH1D*)(histMap[name]))->Fill(pritrk.phi, EWeight);
     }
 }
 
-//void StProtonLaGammaMaker::fillAlphaHists(std::map<std::string, TH1*>& histMap, TChain* chain, Float_t EWeight, Float_t PVZ, Long_t Run) {
 void StProtonLaGammaMaker::fillAlphaHists(std::map<std::string, TH1*>& histMap, const StEvtInfo& evtInfo) {
     // Iteration over all of the tracks
     double EWeight = evtInfo.EWeight(); 
     double PVZ = evtInfo.Vz();
-    const vector<StPriTrkInfo> vecPriTrks = evtInfo.VecPriTrks();
-    const vector<StV0TrkInfo> vecLambdaTrks = evtInfo.VecBetaTrks();
+    const vector<StPriTrkInfo>& vecPriTrks = evtInfo.VecPriTrks();
+    const vector<StV0TrkInfo>& vecLambdaTrks = evtInfo.VecBetaTrks();
     int Day = evtInfo.Day();
     int Day2 = evtInfo.Day2();
     int Day3 = evtInfo.Day3();
-    for(vector<StPriTrkInfo>::const_iterator iter_pri = vecPriTrks.begin(); iter_pri != vecPriTrks.end(); iter_pri++){
+
+    // Find out protons in primary tracks
+    for(vector<StPriTrkInfo>::const_iterator iter_pri = vecPriTrks.begin(); iter_pri != vecPriTrks.end(); ++iter_pri){
         // Eliminate Lambda daughters
 	Bool_t kUse = 0;
-	for(vector<StV0TrkInfo>::const_iterator iter_la = vecLambdaTrks.begin(); iter_la != vecLambdaTrks.end(); iter_la++){
+	for(vector<StV0TrkInfo>::const_iterator iter_la = vecLambdaTrks.begin(); iter_la != vecLambdaTrks.end(); ++iter_la){
 	    if((*iter_pri).id == (*iter_la).id_dau1 || (*iter_pri).id == (*iter_la).id_dau2){
 		kUse = 1; 
 		break;
@@ -854,18 +854,18 @@ void StProtonLaGammaMaker::fillAlphaHists(std::map<std::string, TH1*>& histMap, 
 	    float charge = (*iter_pri).charge;
 	    Float_t En_proton = sqrt(ProtonPDGMass * ProtonPDGMass + pow(pt * cosh(eta), 2));
 	    Float_t Theta_proton = 2. * atan(exp(-eta));
-	    ((TH2F*)(histMap.find("h2f_XEta_YPt_ProtonUnWeighted")->second))->Fill(eta, pt);
-	    ((TH2F*)(histMap.find("h2f_XEta_YPt_ProtonWeighted")->second))->Fill(eta, pt, EWeight);
+	    ((TH2F*)(histMap["h2f_XEta_YPt_ProtonUnWeighted"]))->Fill(eta, pt);
+	    ((TH2F*)(histMap["h2f_XEta_YPt_ProtonWeighted"]))->Fill(eta, pt, EWeight);
 	    // Fill the before correction phi histograms
 
 	    std::string name = getCorrectionHistName("Alpha", eta, PVZ, charge, 'b');
-	    ((TH1D*)(histMap.find(name)->second))->Fill((*iter_pri).phi, EWeight);
+	    ((TH1D*)(histMap[name]))->Fill((*iter_pri).phi, EWeight);
 
 	    // Fill the correction term histograms
 	    name = getCorrectionHistName("Alpha", eta, PVZ, charge, 'c');
-	    for(Int_t kk = 0; kk < order; kk++){
-		((TProfile2D*)(histMap.find(name)->second))->Fill(2 * kk + 1, Day2, cos(kk * phi + phi), EWeight);
-		((TProfile2D*)(histMap.find(name)->second))->Fill(2 * kk + 2, Day2, sin(kk * phi + phi), EWeight);
+	    for(Int_t kk = 0; kk < order; ++kk){
+		((TProfile2D*)(histMap[name]))->Fill(2 * kk + 1, Day2, cos(kk * phi + phi), EWeight);
+		((TProfile2D*)(histMap[name]))->Fill(2 * kk + 2, Day2, sin(kk * phi + phi), EWeight);
 	    }
 	}
 	else
@@ -883,7 +883,7 @@ void StProtonLaGammaMaker::fillBetaHists(std::map<std::string, TH1*>& histMap, c
     //for(Int_t i = 0; i < NLambda; i++){
     m_LambdaTrkCuts->Dump();
     for(vector<StV0TrkInfo>::const_iterator iter_la = vecLambdaTrks.begin();
-                             iter_la != vecLambdaTrks.end(); iter_la++){
+                             iter_la != vecLambdaTrks.end(); ++iter_la){
         double eta = (*iter_la).eta;
 	double mass = (*iter_la).mass;
 	double pt = (*iter_la).pt;
@@ -901,57 +901,13 @@ void StProtonLaGammaMaker::fillBetaHists(std::map<std::string, TH1*>& histMap, c
 
 	// Fill the before correction phi histograms
         std::string name = getCorrectionHistName("Beta", eta, PVZ, charge, 'b'); 
-        ((TH1D*)(histMap.find(name))->second)->Fill(phi, EWeight);
+        ((TH1D*)(histMap[name])->Fill(phi, EWeight);
 
         // Fill the correction term histograms
         name = getCorrectionHistName("Beta", eta, PVZ, charge, 'c');
-	for(Int_t kk = 0; kk < order; kk++){
-	    ((TProfile2D*)(histMap.find(name)->second))->Fill(2 * kk + 1, Day2, cos(kk * phi + phi), EWeight);
-	    ((TProfile2D*)(histMap.find(name)->second))->Fill(2 * kk + 2, Day2, sin(kk * phi + phi), EWeight);
+	for(Int_t kk = 0; kk < order; ++kk){
+	    ((TProfile2D*)(histMap[name])->Fill(2 * kk + 1, Day2, cos(kk * phi + phi), EWeight);
+	    ((TProfile2D*)(histMap[name])->Fill(2 * kk + 2, Day2, sin(kk * phi + phi), EWeight);
 	}
     }
-
-}
-
-void StProtonLaGammaMaker::computePhiWeightsHelper(Int_t i, Int_t ii, Int_t iii, Char_t particle, std::map<std::string, TH1*>& histMap){
-    std::string Eta = ((i == 0)? "FF" : "RF");
-    std::string PVZ = ((ii == 0)? "PVZPos" : "PVZNeg");
-    std::string Charge = ((iii == 0)? "ChPos" : "ChNeg");
-
-    char histname[100];
-   
-    //std::cout << "particle is " << particle << std::endl;
-    if(particle == 'a' || particle == 'b'){
-        std::string particle_name = (particle == 'a')? "Alpha":"Beta";
-	sprintf(histname, "h1d_before_Corrections_%s_%s_%s_%sPhi", Eta.c_str(), PVZ.c_str(), Charge.c_str(), particle_name.c_str());
-    }
-    else if(particle == 'p'){
-	sprintf(histname, "h1d_before_Corrections_%s_%s_%s_PrimaryTrkPhi", Eta.c_str(), PVZ.c_str(), Charge.c_str());
-    }
-    else
-        return;
-
-
-    std::string histname_string(histname);
-    //std::cout << histname_string << std::endl;
-    TH1D* hist = (TH1D*)histMap[histname_string];
-    Float_t phi_mean = ((TH1D*)histMap[histname_string])->GetSum() / (Float_t)phiBins;
-
-    switch(particle){
-	case 'a':
-	    for(Int_t j = 0; j < phiBins; j++)
-		m_AlphaPhiWeight[i][ii][iii][j] = (hist->GetBinContent(j + 1) != 0.)? phi_mean / (hist->GetBinContent(j + 1)) : 1;
-	    break;
-	case 'b':
-	    for(Int_t j = 0; j < phiBins; j++)
-		m_BetaPhiWeight[i][ii][iii][j] = (hist->GetBinContent(j + 1) != 0.)?  phi_mean / (hist->GetBinContent(j + 1)) : 1;
-	    break;
-	case 'p':
-	    for(Int_t j = 0; j < phiBins; j++)
-		m_PrimaryTracksPhiWeight[i][ii][iii][j] = (hist->GetBinContent(j + 1) != 0.)? phi_mean / (hist->GetBinContent(j + 1)) : 1;
-	    break;
-	default:
-	    break;
-    }  
-    return;
 }

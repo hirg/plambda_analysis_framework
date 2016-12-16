@@ -9,11 +9,10 @@ This class is only used in local analysis auau39GeV 2010
 #include "../StRefMultCorr/StRefMultCorr.h"
 #include "TChain.h"
 using namespace std;
-//#include "StMuDSTMaker/COMMON/StMuDst.h"
 class StEvtInfo{
 public:
     StEvtInfo(){}
-    StEvtInfo(TChain* chain, StRefMultCorr& refmultCorrUtil){
+    StEvtInfo(TChain* chain, StRefMultCorr& refmultCorrUtil):m_AlphaCharge(1.0), m_BetaCharge(1.0){
        m_RunId = chain->GetLeaf("mRunId")->GetValue(0); 
        m_EventId = chain->GetLeaf("mEventId")->GetValue(0);
        m_RefMult = chain->GetLeaf("mRefMult")->GetValue(0);
@@ -23,20 +22,23 @@ public:
        m_Vz = chain->GetLeaf("mPrimaryVertexZ")->GetValue(0);
        m_NPTracks = chain->GetLeaf("mNoTracks")->GetValue(0);
        m_NLambdas = chain->GetLeaf("mNoLambdas")->GetValue(0);
-       m_ZdcCoinRate = 27000; // TODO
-       m_Day = int((m_RunId - 11000000) / 1000); // TODO:
-       m_Day2 = int((m_RunId - 11000000) / 10); // TODO:
-       m_Day3 = int((m_RunId - 11000000) / 1); // TODO:
-// Add Primary Tracks
-       for(int i = 0; i < m_NPTracks; i++){
+       m_ZdcCoinRate = chain->GetLeaf("mZDCCoin")->GetValue(0); // TODO
+       m_Day = int((m_RunId - 12000000) / 1000); // TODO:
+       m_Day2 = int((m_RunId - 12000000) / 10); // TODO:
+       m_Day3 = int((m_RunId - 12000000) / 1); // TODO:
+
+// Add Primary Tracks, used to reconstruct event planes
+       for(int i = 0; i < m_NPTracks; ++i){
            StPriTrkInfo trk(chain, i); 
 	   AddPrimaryTrk(trk);
        }
+
 // Add Alpha Tracks no?
+
 // Add Beta Tracks
-       for(int i = 0; i < m_NLambdas; i++){
-           StV0TrkInfo trk(chain, 1.0, i); // TODO: Lambda particles
-           AddBetaTrk(trk); 
+       for(int i = 0; i < m_NLambdas; ++i){
+           StV0TrkInfo trk(chain, m_BetaCharge, i); // TODO: Lambda particles, the beta charge is the baryonic charge
+           AddBetaTrk(trk);
        }
 
        refmultCorrUtil.init(m_RunId);
@@ -67,6 +69,8 @@ public:
     // Setters...
     void SetCentrality(int cent) { m_Centrality = cent; }
     void SetEWeight(double weight) { m_EWeight = weight; }
+    void SetAlphaCharge(float charge) { m_AlphaCharge = charge; }
+    void SetBetaCharge(float charge) { m_BetaCharge = charge; }
 
     virtual ~StEvtInfo(){}
     virtual const vector<StPriTrkInfo>& VecPriTrks() const { return m_VecPriTrks; }
@@ -92,6 +96,8 @@ private:
     int m_Day2;
     int m_Day3;
     bool m_badrun;
+    float m_AlphaCharge;
+    float m_BetaCharge;
     vector<StPriTrkInfo> m_VecPriTrks;
     vector<StPriTrkInfo> m_VecAlphaTrks;
     vector<StV0TrkInfo> m_VecBetaTrks;

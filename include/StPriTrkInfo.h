@@ -21,13 +21,15 @@ struct StPriTrkInfo{// nHits
 	p = chain->GetLeaf("fV0s.mPV0")->GetValue(idx);
 	double tof = chain->GetLeaf("fV0s.mTofV0")->GetValue(idx);
 	double path = chain->GetLeaf("fV0s.mPathlenV0")->GetValue(idx);
-        beta = path / tof / 30;// TODO: Need Check;
+        beta = path / tof / 29.9792458;// TODO: Need Check;
 	//cout << "beta: " << beta << endl;
-	m2 = p * p * (1 / beta / beta - 1.0);
+	m2 = p * p * (1.0 / beta / beta - 1.0);
 
 	phi = chain->GetLeaf("fV0s.mPhiV0")->GetValue(idx);
-        if(phi > PI) phi -= 2 * PI;
-        if(phi < -PI) phi += 2 * PI;
+        //TVector3 vec3_pritrk(chain->GetLeaf("fV0s.mPxprimaryV0")->GetValue(idx),
+        //                    chain->GetLeaf("fV0s.mPyprimaryV0")->GetValue(idx),
+        //                    chain->GetLeaf("fV0s.mPzprimaryV0")->GetValue(idx));
+        //phi = vec3_pritrk.Phi(); 
     }
 
     short id;

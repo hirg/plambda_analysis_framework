@@ -16,7 +16,6 @@ bool StPriPTrkCuts::PassPIDCuts(const StPriTrkInfo& p) const{
 	tof_flag = true;
     }
 
-
     return (nsigma_flag && tof_flag);
 }
 

@@ -19,18 +19,27 @@ class StCorrelationMaker{
 	StCorrelationMaker(Int_t, Int_t, StEffMaker* effMaker_Alpha, StEffMaker* effMaker_Beta, StEffMaker* effMaker_AlphaBar, StEffMaker* effMaker_BetaBar);
         virtual ~StCorrelationMaker(){}
 
-        // Step Zero: configuration
+        // Step Zero: configuration and initialization
         void LoadDataSet(const set<string> dataset) { m_DataSet = dataset; } 
 	void LoadEvtCuts(StEvtCuts* cuts) { m_EvtCuts = cuts; }
 	void SetDay2Boundaries(pair<int, int> bds) { m_Day2LowerBound = bds.first; m_Day2UpperBound = bds.second; }
 	void SetDayBoundaries(pair<int, int> bds) { m_DayLowerBound = bds.first; m_DayUpperBound = bds.second; }
 	Int_t Init();
-        // Step One
+
+        // Step One: do phi angle correction, strore the phi weights in weights0.cenX_#events.root
 	Int_t ComputePhiCorrectionParams();
+
+        // Step Two: reconstruct the raw event plane(sub-event/full) distribution and store weights in weights1.cenX_#events.root
         virtual void ReconstructEventPlaneWithPhiWeightCorrection();
+
+        // Step Three: reconstruct shifted sub-event/full plane distribution and store weights in weights2.cenX_#events.root
         virtual void ReconstructShiftedSubEventPlane();
+
+        // Step Four: compute correlator and store the results in result.cenX_#events.root 
         virtual void ReconstructShiftedFullEventPlaneAndComputeCorrelator();
+
         void Finish();
+
         void getWeightsIndex(Int_t*, Float_t, Float_t, Float_t);
 
         StEffMaker* GetAlphaEffMaker(){ return m_EffMakerAlpha; }
@@ -44,6 +53,9 @@ class StCorrelationMaker{
 	int Day2UpperBound(){ return m_Day2UpperBound; }
         Int_t GetCentrality(){ return m_Centrality; }
 
+        TFile* GetWeights0File(){ return m_Weights0File; } 
+        TFile* GetWeights1File(){ return m_Weights1File; } 
+        TFile* GetWeights2File(){ return m_Weights2File; } 
     private:
         set<string> m_DataSet;
         StEffMaker* m_EffMakerAlpha;
@@ -54,7 +66,7 @@ class StCorrelationMaker{
         StEvtCuts* m_EvtCuts;
 
 	virtual Int_t addTrees();
-	virtual Int_t initiateHistograms();
+	virtual Int_t initHistograms();
         virtual void zeroWeightsHistograms();
 	//virtual Int_t initiateComputingParams();
 
@@ -78,14 +90,10 @@ class StCorrelationMaker{
 	virtual void fillBetaHists(std::map<std::string, TH1*>& histMap, const StEvtInfo& evtInfo){}
 
         virtual void computePhiWeights(std::map<std::string, TH1*>& histMap){
-            computePrimaryTracksPhiWeights(histMap);
-            computeAlphaPhiWeights(histMap);
-            computeBetaPhiWeights(histMap);
+	    computeParticlePhiWeights(histMap, 'p'); // Primary tracks
+	    computeParticlePhiWeights(histMap, 'a'); // Alpha tracks
+	    computeParticlePhiWeights(histMap, 'b'); // Beta tracks
 	}
-
-	virtual void computePrimaryTracksPhiWeights(std::map<std::string, TH1*>& histMap);
-        virtual void computeAlphaPhiWeights(std::map<std::string, TH1*>& histMap);
-	virtual void computeBetaPhiWeights(std::map<std::string, TH1*>& histMap);
 
         virtual void computeParticlePhiWeights(std::map<std::string, TH1*>& histMap, Char_t particle);
         virtual void computePhiWeightsHelper(Int_t, Int_t, Int_t, Char_t particle, std::map<std::string, TH1*>&){}
@@ -98,6 +106,9 @@ class StCorrelationMaker{
         virtual void reconstructShiftedFullEventPlaneHelper(std::map<std::string, TH1*>& hsitMap, const StEvtInfo& evtInfo, TVector2& shiftedepphi_full){}
         virtual void computeCorrelatorsHelper(std::map<std::string, TH1*>& hsitMap, const StEvtInfo& evtInfo, TVector2 shiftedepphi_full){}
   
+        virtual void saveWeights0File();
+        virtual void saveWeights1File();
+        virtual void saveWeights2File();
 
         // Get event plane weight
 	//Int_t computeRawSubEpCorrectedByPhiWeight(){}
@@ -108,7 +119,9 @@ class StCorrelationMaker{
 	//std::unoredered_map<std::string, TObject*> m_EventPlaneHistsCollection;
 
 	// Output files
-	TFile* m_WeightFile;
+	TFile* m_Weights0File;
+	TFile* m_Weights1File;
+	TFile* m_Weights2File;
 	TFile* m_ResultFile;
 
 	// Event number to processed
@@ -131,26 +144,51 @@ void StCorrelationMaker::getWeightsIndex(Int_t* index, Float_t Eta, Float_t PVZ,
 
 inline
 void StCorrelationMaker::computeParticlePhiWeights(std::map<std::string, TH1*>& histMap, Char_t particle){
-    for(Int_t i = 0; i < 2; i++){
-        for(Int_t ii = 0; ii < 2; ii++){
-            for(Int_t iii = 0; iii < 2; iii++)
+    for(Int_t i = 0; i < 2; ++i){
+        for(Int_t ii = 0; ii < 2; ++ii){
+            for(Int_t iii = 0; iii < 2; ++iii)
                 computePhiWeightsHelper(i, ii, iii, particle, histMap);
         }
     }
 }
 
+// This one is called in StCorrelationMaker.cpp
 inline
-void StCorrelationMaker::computePrimaryTracksPhiWeights(std::map<std::string, TH1*>& histMap){
-    computeParticlePhiWeights(histMap, 'p');
-}
+void StCorrelationMaker::computePhiWeightsHelper(Int_t i, Int_t ii, Int_t iii, Char_t particle, std::map<std::string, TH1*>& histMap){
+    std::string Eta = ((i == 0)? "FF" : "RF");
+    std::string PVZ = ((ii == 0)? "PVZPos" : "PVZNeg");
+    std::string Charge = ((iii == 0)? "ChPos" : "ChNeg");
 
-inline
-void StCorrelationMaker::computeAlphaPhiWeights(std::map<std::string, TH1*>& histMap){
-    computeParticlePhiWeights(histMap, 'a');
-}
+    char histname[100];
+   
+    //std::cout << "particle is " << particle << std::endl;
+    std::map<char, std::string> map_par;
+    map_par.insert(std::pair<char, std::string>('a', "Alpha"));
+    map_par.insert(std::pair<char, std::string>('b', "Beta"));
+    map_par.insert(std::pair<char, std::string>('p', "PrimaryTrk"));
+    sprintf(histname, "h1d_before_Corrections_%s_%s_%s_%sPhi", map_par[particle]);
 
-inline
-void StCorrelationMaker::computeBetaPhiWeights(std::map<std::string, TH1*>& histMap){
-    computeParticlePhiWeights(histMap, 'b');
+    std::string histname_string(histname);
+    //std::cout << histname_string << std::endl;
+    TH1D* hist = (TH1D*)histMap[histname_string];
+    Float_t phi_mean = ((TH1D*)histMap[histname_string])->GetSum() / (Float_t)phiBins;
+
+    switch(particle){
+	case 'a':
+	    for(Int_t j = 0; j < phiBins; ++j)
+		m_AlphaPhiWeight[i][ii][iii][j] = (hist->GetBinContent(j + 1) != 0.)? phi_mean / (hist->GetBinContent(j + 1)) : 1;
+	    break;
+	case 'b':
+	    for(Int_t j = 0; j < phiBins; ++j)
+		m_BetaPhiWeight[i][ii][iii][j] = (hist->GetBinContent(j + 1) != 0.)?  phi_mean / (hist->GetBinContent(j + 1)) : 1;
+	    break;
+	case 'p':
+	    for(Int_t j = 0; j < phiBins; ++j)
+		m_PrimaryTracksPhiWeight[i][ii][iii][j] = (hist->GetBinContent(j + 1) != 0.)? phi_mean / (hist->GetBinContent(j + 1)) : 1;
+	    break;
+	default:
+	    break;
+    }  
+    return;
 }
 #endif
