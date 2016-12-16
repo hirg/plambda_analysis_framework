@@ -1,5 +1,5 @@
 #ifndef STPRITRKGENERALCUTS_H
-#define STPRIETRKGENERALCUTS_H
+#define STPRITRKGENERALCUTS_H
 #include <iostream>
 #include "../StPriTrkCuts/StPriTrkCuts.h"
 #include "../include/StPriTrkInfo.h"

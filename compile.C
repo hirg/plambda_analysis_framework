@@ -1,4 +1,4 @@
-void compile(int cen){
+void compile(int cen, string option="test"){
     gROOT->LoadMacro("StRefMultCorr/StRefMultCorr.cxx++");
     gROOT->LoadMacro("StPriTrkCuts/StPriTrkCuts.cpp++");
     gROOT->LoadMacro("StPriTrkGeneralCuts/StPriTrkGeneralCuts.cpp++");
@@ -6,7 +6,7 @@ void compile(int cen){
     gROOT->LoadMacro("StEvtInfo/StEvtInfo.cpp++");
     gROOT->LoadMacro("StEvtCuts/StEvtCuts.cpp++");
     gROOT->LoadMacro("StV0TrkCuts/StV0TrkCuts.cpp++");
-    gROOT->LoadMacro("StProtonLaGammaMaker/StCorrelationMaker.cpp++");
+    gROOT->LoadMacro("StCorrelationMaker/StCorrelationMaker.cpp++");
     gROOT->LoadMacro("StProtonLaGammaMaker/StProtonLaGammaMaker.cpp++");
     gROOT->LoadMacro("StProtonLaGammaMaker/StEffMaker.h++");
     gROOT->LoadMacro("StProtonLaGammaMaker/StErfEffMaker.h++");
@@ -121,7 +121,8 @@ void compile(int cen){
     lambda_cuts->SetMassUpperBound(1.115683 + 0.004);
     lambda_cuts->Dump();
 
-    StProtonLaGammaMaker* maker = new StProtonLaGammaMaker(cen, 0, eMaker_Alpha, eMaker_Beta, eMaker_AlphaBar, eMaker_BetaBar);
+    int NEvents_todo = 0;
+    StProtonLaGammaMaker* maker = new StProtonLaGammaMaker(cen, NEvents_todo, eMaker_Alpha, eMaker_Beta, eMaker_AlphaBar, eMaker_BetaBar);
 
     pair<int, int> pair_day2(8000, 18000); // TODO: change
     pair<int, int> pair_day(80, 180); //TODO: This is for event-plane correction
@@ -129,18 +130,23 @@ void compile(int cen){
     maker->SetDay2Boundaries(pair_day2);
 
     set<string> dataset;
-    dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data154/*.lambda.picodst.root"); 
-    dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data155/*.lambda.picodst.root");
-    dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data156/*.lambda.picodst.root");
-    dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data157/*.lambda.picodst.root");
-    dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data158/*.lambda.picodst.root");
-    dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data159/*.lambda.picodst.root");
-    dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data160/*.lambda.picodst.root");
-    dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data161/*.lambda.picodst.root");
-    dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data162/*.lambda.picodst.root");
-    dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data163/*.lambda.picodst.root");
-    dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data164/*.lambda.picodst.root");
-    dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data165/*.lambda.picodst.root");
+    if(option == "test")
+	dataset.insert("/media/liwen/Disk_Wen/auau200GeV_run11Period1/Data136/9FBE2D1F97D591C3384C8236F32E7FFE_1001.lambda.picodst.root"); 
+    if(option == "production"){
+	dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data154/*.lambda.picodst.root"); 
+	dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data155/*.lambda.picodst.root");
+	dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data156/*.lambda.picodst.root");
+	dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data157/*.lambda.picodst.root");
+	dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data158/*.lambda.picodst.root");
+	dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data159/*.lambda.picodst.root");
+	dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data160/*.lambda.picodst.root");
+	dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data161/*.lambda.picodst.root");
+	dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data162/*.lambda.picodst.root");
+	dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data163/*.lambda.picodst.root");
+	dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data164/*.lambda.picodst.root");
+	dataset.insert("/media/Disk_Yan/liwen/Run11_200GeV/Data165/*.lambda.picodst.root");
+    }
+
     maker->LoadDataSet(dataset);
 
     maker->LoadEvtCuts(evt_cuts);

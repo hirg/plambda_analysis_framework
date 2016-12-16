@@ -17,7 +17,7 @@ bool StPriTrkCuts::PassPtCuts(const StPriTrkInfo& p) const{
 }
 
 bool StPriTrkCuts::PassNHitsCuts(const StPriTrkInfo& p) const{
-    //return (p.nhits > NHitsLowerBound()) && (p.nhitsratio > NHitsRatioLowerBound());
+    return true;//return (p.nhits > NHitsLowerBound()) && (p.nhitsratio > NHitsRatioLowerBound());
 }
 
 bool StPriTrkCuts::PassChargeCuts(const StPriTrkInfo& p) const{
@@ -26,6 +26,7 @@ bool StPriTrkCuts::PassChargeCuts(const StPriTrkInfo& p) const{
     //       return true;
     //}
     //return false;
+    return true;
 }
 
 bool StPriTrkCuts::PassDcaCuts(const StPriTrkInfo& p) const{

@@ -50,7 +50,7 @@ class StErfEffMaker: public StEffMaker{
 	}
 
         virtual Double_t GetEfficiency(Int_t cent, Double_t pt) const{
-             return IsInitialized()? ((pt >= m_PtThreshold)? m_VecEffFunc_Flat[cent - 1].Eval(pt):m_VecEffFunc_Exp[cent - 1].Eval(pt)) : 1; 
+             return IsInitialized()? ((pt >= StEffMaker::PtLowerBound())? m_VecEffFunc_Flat[cent - 1].Eval(pt):m_VecEffFunc_Exp[cent - 1].Eval(pt)) : 1; 
 	}
 
     private: 

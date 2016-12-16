@@ -6,13 +6,14 @@
 #include "TChain.h"
 #include "TObject.h"
 #include "TLeaf.h"
-#include "StEffMaker.h"
+#include "../StProtonLaGammaMaker/StEffMaker.h"
 #include "../StEvtCuts/StEvtCuts.h"
 #include "../StEvtInfo/StEvtInfo.h"
 #include <map>
 #include <set>
 #include "TVector2.h"
 #include <string>
+#include "TFile.h"
 //This is the base class for event-plane related azimuthal angle correlation analysis
 class StCorrelationMaker{
     public:
@@ -24,10 +25,10 @@ class StCorrelationMaker{
 	void LoadEvtCuts(StEvtCuts* cuts) { m_EvtCuts = cuts; }
 	void SetDay2Boundaries(pair<int, int> bds) { m_Day2LowerBound = bds.first; m_Day2UpperBound = bds.second; }
 	void SetDayBoundaries(pair<int, int> bds) { m_DayLowerBound = bds.first; m_DayUpperBound = bds.second; }
-	Int_t Init();
+	virtual Int_t Init();
 
         // Step One: do phi angle correction, strore the phi weights in weights0.cenX_#events.root
-	Int_t ComputePhiCorrectionParams();
+	virtual void ComputePhiCorrectionParams();
 
         // Step Two: reconstruct the raw event plane(sub-event/full) distribution and store weights in weights1.cenX_#events.root
         virtual void ReconstructEventPlaneWithPhiWeightCorrection();
@@ -96,19 +97,19 @@ class StCorrelationMaker{
 	}
 
         virtual void computeParticlePhiWeights(std::map<std::string, TH1*>& histMap, Char_t particle);
-        virtual void computePhiWeightsHelper(Int_t, Int_t, Int_t, Char_t particle, std::map<std::string, TH1*>&){}
+        virtual void computePhiWeightsHelper(Int_t, Int_t, Int_t, Char_t particle, std::map<std::string, TH1*>&) = 0;
 
         // Event plane correction I
-        virtual void reconstructSubEventPlaneWithPhiWeightHelper(std::map<std::string, TH1*>& hsitMap, const StEvtInfo& evtInfo){}
+        virtual void reconstructSubEventPlaneWithPhiWeightHelper(std::map<std::string, TH1*>& hsitMap, const StEvtInfo& evtInfo) = 0;
         // Event plane correction II
-        virtual void reconstructShiftedSubEventPlaneHelper(std::map<std::string, TH1*>& hsitMap, const StEvtInfo& evtInfo){}
+        virtual void reconstructShiftedSubEventPlaneHelper(std::map<std::string, TH1*>& hsitMap, const StEvtInfo& evtInfo) = 0;
         // Event plane correction III
-        virtual void reconstructShiftedFullEventPlaneHelper(std::map<std::string, TH1*>& hsitMap, const StEvtInfo& evtInfo, TVector2& shiftedepphi_full){}
-        virtual void computeCorrelatorsHelper(std::map<std::string, TH1*>& hsitMap, const StEvtInfo& evtInfo, TVector2 shiftedepphi_full){}
+        virtual void reconstructShiftedFullEventPlaneHelper(std::map<std::string, TH1*>& hsitMap, const StEvtInfo& evtInfo, TVector2& shiftedepphi_full) = 0;
+        virtual void computeCorrelatorsHelper(std::map<std::string, TH1*>& hsitMap, const StEvtInfo& evtInfo, TVector2 shiftedepphi_full) = 0;
   
-        virtual void saveWeights0File();
-        virtual void saveWeights1File();
-        virtual void saveWeights2File();
+        virtual void saveWeights0File(std::map<std::string, TH1*>&) = 0;
+        virtual void saveWeights1File(std::map<std::string, TH1*>&) = 0;
+        virtual void saveWeights2File(std::map<std::string, TH1*>&) = 0;
 
         // Get event plane weight
 	//Int_t computeRawSubEpCorrectedByPhiWeight(){}
@@ -150,45 +151,5 @@ void StCorrelationMaker::computeParticlePhiWeights(std::map<std::string, TH1*>& 
                 computePhiWeightsHelper(i, ii, iii, particle, histMap);
         }
     }
-}
-
-// This one is called in StCorrelationMaker.cpp
-inline
-void StCorrelationMaker::computePhiWeightsHelper(Int_t i, Int_t ii, Int_t iii, Char_t particle, std::map<std::string, TH1*>& histMap){
-    std::string Eta = ((i == 0)? "FF" : "RF");
-    std::string PVZ = ((ii == 0)? "PVZPos" : "PVZNeg");
-    std::string Charge = ((iii == 0)? "ChPos" : "ChNeg");
-
-    char histname[100];
-   
-    //std::cout << "particle is " << particle << std::endl;
-    std::map<char, std::string> map_par;
-    map_par.insert(std::pair<char, std::string>('a', "Alpha"));
-    map_par.insert(std::pair<char, std::string>('b', "Beta"));
-    map_par.insert(std::pair<char, std::string>('p', "PrimaryTrk"));
-    sprintf(histname, "h1d_before_Corrections_%s_%s_%s_%sPhi", map_par[particle]);
-
-    std::string histname_string(histname);
-    //std::cout << histname_string << std::endl;
-    TH1D* hist = (TH1D*)histMap[histname_string];
-    Float_t phi_mean = ((TH1D*)histMap[histname_string])->GetSum() / (Float_t)phiBins;
-
-    switch(particle){
-	case 'a':
-	    for(Int_t j = 0; j < phiBins; ++j)
-		m_AlphaPhiWeight[i][ii][iii][j] = (hist->GetBinContent(j + 1) != 0.)? phi_mean / (hist->GetBinContent(j + 1)) : 1;
-	    break;
-	case 'b':
-	    for(Int_t j = 0; j < phiBins; ++j)
-		m_BetaPhiWeight[i][ii][iii][j] = (hist->GetBinContent(j + 1) != 0.)?  phi_mean / (hist->GetBinContent(j + 1)) : 1;
-	    break;
-	case 'p':
-	    for(Int_t j = 0; j < phiBins; ++j)
-		m_PrimaryTracksPhiWeight[i][ii][iii][j] = (hist->GetBinContent(j + 1) != 0.)? phi_mean / (hist->GetBinContent(j + 1)) : 1;
-	    break;
-	default:
-	    break;
-    }  
-    return;
 }
 #endif

@@ -18,6 +18,8 @@ class StEffMaker{
         void SetPtThreshold(Double_t pt){ m_PtThreshold = pt; }
         void SetEffFileName(const string& name){ m_EffFileName = name; }
 
+        double PtLowerBound() const{ return m_PtThreshold; }
+
     private:
         Bool_t m_Initialized;
         unsigned int m_CentBins;

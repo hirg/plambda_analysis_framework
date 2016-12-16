@@ -64,7 +64,7 @@ Int_t StCorrelationMaker::Init(){
 }
 
 // Step One: compute phi weights 
-Int_t StCorrelationMaker::ComputePhiCorrectionParams(){
+void StCorrelationMaker::ComputePhiCorrectionParams(){
     std::cout << ">>>>>>>>Phi Correction Starts...<<<<<<<<<" << std::endl;
     StRefMultCorr refmultCorrUtil = StRefMultCorr("refmult");
 
@@ -74,11 +74,11 @@ Int_t StCorrelationMaker::ComputePhiCorrectionParams(){
 	StEvtInfo evtInfo(m_Chain, refmultCorrUtil);
 	if(!m_EvtCuts->PassAllCuts(evtInfo)) continue;
 
-	((TH1D*)(m_HistsCollection.find("h1d_CentralityUnWeighted")->second))->Fill(evtInfo.Centrality());
-	((TH1D*)(m_HistsCollection.find("h1d_CentralityWeighted")->second))->Fill(evtInfo.Centrality(), evtInfo.EWeight());
-	((TH1D*)(m_HistsCollection.find("h1d_PVertexZUnWeighted")->second))->Fill(evtInfo.Vz());
-	((TH1D*)(m_HistsCollection.find("h1d_PVertexZWeighted")->second))->Fill(evtInfo.Vz(), evtInfo.EWeight());
-	((TH1D*)(m_HistsCollection.find("h1d_EventTally")->second))->Fill("Total Event", 1);
+	((TH1D*)(m_HistsCollection["h1d_CentralityUnWeighted"]))->Fill(evtInfo.Centrality());
+	((TH1D*)(m_HistsCollection["h1d_CentralityWeighted"]))->Fill(evtInfo.Centrality(), evtInfo.EWeight());
+	((TH1D*)(m_HistsCollection["h1d_PVertexZUnWeighted"]))->Fill(evtInfo.Vz());
+	((TH1D*)(m_HistsCollection["h1d_PVertexZWeighted"]))->Fill(evtInfo.Vz(), evtInfo.EWeight());
+	((TH1D*)(m_HistsCollection["h1d_EventTally"]))->Fill("Total Event", 1);
 
 	// Filling particle histograms
 	fillPrimaryTracksPhiHists(m_HistsCollection, evtInfo);
@@ -87,8 +87,8 @@ Int_t StCorrelationMaker::ComputePhiCorrectionParams(){
     }
     computePhiWeights(m_HistsCollection);
 
-    // Save phi weights histograms
-    saveWeights0File();
+    // Save phi weights histograms, implemented in derived class, let them to decide the set of histograms to store
+    saveWeights0File(m_HistsCollection);
 }
 
 void StCorrelationMaker::ReconstructEventPlaneWithPhiWeightCorrection(){
@@ -144,7 +144,7 @@ Int_t StCorrelationMaker::initHistograms(){
 
     m_Weights0File->cd();
     TH1D* h1d_EventTally = new TH1D("h1d_EventTally", "Event Tally", 10, 0, 1); 
-    h1d_EventTally->SetBit(TH1::kCanRebin);
+    //h1d_EventTally->SetBit(TH1::kCanRebin);
     h1d_EventTally->SetStats(0);
     m_HistsCollection.insert(std::pair<std::string, TH1*>("h1d_EventTally", h1d_EventTally));
 
@@ -208,7 +208,7 @@ Int_t StCorrelationMaker::initHistograms(){
     m_HistsCollection.insert(std::pair<std::string, TH1*>("h2d_Eta_vs_PtUnWeighted", h2d_Eta_vs_PtUnWeighted));
     m_HistsCollection.insert(std::pair<std::string, TH1*>("h2d_Eta_vs_PtWeighted", h2d_Eta_vs_PtWeighted));
 
-    std::vec<std::string> features;
+    std::vector<std::string> features;
     features.push_back("FF_PVZPos_ChPos");
     features.push_back("FF_PVZPos_ChNeg");
     features.push_back("FF_PVZNeg_ChPos");
@@ -218,7 +218,7 @@ Int_t StCorrelationMaker::initHistograms(){
     features.push_back("RF_PVZNeg_ChPos");
     features.push_back("RF_PVZNeg_ChNeg");
 
-    for(int i = 0; i != features.size(); ++i){
+    for(unsigned int i = 0; i != features.size(); ++i){
         char histname[100]; 
 
 	// phi distribution before correction
@@ -228,8 +228,8 @@ Int_t StCorrelationMaker::initHistograms(){
 
 	// phi distribution after correction
         sprintf(histname, "h1d_after_Corrections_%s_PrimaryTrkPhi", features[i].c_str());
-	TH1D* h1d_before_tmp = new TH1D(histname, histname, phiBins, -PI, PI);
-	m_HistsCollection.insert(std::pair<std::string, TH1*>(histname, h1d_before_tmp));
+	TH1D* h1d_after_tmp = new TH1D(histname, histname, phiBins, -PI, PI);
+	m_HistsCollection.insert(std::pair<std::string, TH1*>(histname, h1d_after_tmp));
     }
 
     addAlphaHists(m_HistsCollection); // Phi distribution + invariant mass
@@ -250,7 +250,7 @@ Int_t StCorrelationMaker::addTrees(){
 void StCorrelationMaker::addAlphaHists(std::map<std::string, TH1*>& histMap){
     std::cout << histMap.size() << "size before addAlphaHists" << std::endl;
     // Used to check distribution before correction 
-    std::vec<std::string> features;
+    std::vector<std::string> features;
     features.push_back("FF_PVZPos_ChPos");
     features.push_back("FF_PVZPos_ChNeg");
     features.push_back("FF_PVZNeg_ChPos");
@@ -260,7 +260,7 @@ void StCorrelationMaker::addAlphaHists(std::map<std::string, TH1*>& histMap){
     features.push_back("RF_PVZNeg_ChPos");
     features.push_back("RF_PVZNeg_ChNeg");
 
-    for(int i = 0; i != features.size(); ++i){
+    for(unsigned int i = 0; i != features.size(); ++i){
         char histname[100]; 
 
 	// phi distribution before correction
@@ -276,8 +276,8 @@ void StCorrelationMaker::addAlphaHists(std::map<std::string, TH1*>& histMap){
 
 	// phi distribution after correction
         sprintf(histname, "h1d_after_Corrections_%s_AlphaPhi", features[i].c_str());
-	TH1D* h1d_before_tmp = new TH1D(histname, histname, phiBins, -PI, PI);
-	histMap.insert(std::pair<std::string, TH1*>(histname, h1d_before_tmp));
+	TH1D* h1d_after_tmp = new TH1D(histname, histname, phiBins, -PI, PI);
+	histMap.insert(std::pair<std::string, TH1*>(histname, h1d_after_tmp));
     }
 
     // Used to check after correction distribution
@@ -291,7 +291,7 @@ void StCorrelationMaker::addAlphaHists(std::map<std::string, TH1*>& histMap){
 }
 
 void StCorrelationMaker::addBetaHists(std::map<std::string, TH1*>& histMap){
-    std::vec<std::string> features;
+    std::vector<std::string> features;
     features.push_back("FF_PVZPos_ChPos");
     features.push_back("FF_PVZPos_ChNeg");
     features.push_back("FF_PVZNeg_ChPos");
@@ -301,7 +301,7 @@ void StCorrelationMaker::addBetaHists(std::map<std::string, TH1*>& histMap){
     features.push_back("RF_PVZNeg_ChPos");
     features.push_back("RF_PVZNeg_ChNeg");
 
-    for(int i = 0; i != features.size(); ++i){
+    for(unsigned int i = 0; i != features.size(); ++i){
         char histname[100]; 
 
 	// phi distribution before correction
@@ -317,8 +317,8 @@ void StCorrelationMaker::addBetaHists(std::map<std::string, TH1*>& histMap){
 
 	// phi distribution after correction
         sprintf(histname, "h1d_after_Corrections_%s_BetaPhi", features[i].c_str());
-	TH1D* h1d_before_tmp = new TH1D(histname, histname, phiBins, -PI, PI);
-	histMap.insert(std::pair<std::string, TH1*>(histname, h1d_before_tmp));
+	TH1D* h1d_after_tmp = new TH1D(histname, histname, phiBins, -PI, PI);
+	histMap.insert(std::pair<std::string, TH1*>(histname, h1d_after_tmp));
     }
     // Used to fill correction terms to flatten the distribution of Lambda's phi
     // Used to check after correction distribution
@@ -331,7 +331,7 @@ void StCorrelationMaker::addBetaHists(std::map<std::string, TH1*>& histMap){
 }
 
 void StCorrelationMaker::zeroWeightsHistograms(){
-    vec<string> features;
+    std::vector<std::string> features;
     features.push_back("FF_PVZPos_ChPos");
     features.push_back("FF_PVZPos_ChNeg");
     features.push_back("FF_PVZNeg_ChPos");
@@ -343,10 +343,10 @@ void StCorrelationMaker::zeroWeightsHistograms(){
 
     string trk_types[3] = {"Alpha", "Beta", "PrimaryTrk"};
 
-    for(int i = 0; i != features.size(); ++i){
+    for(unsigned int i = 0; i != features.size(); ++i){
 	for(int j = 0; j != 3; ++j){
             char histname[100];
-	    sprintf(histname, "h1d_before_Corrections_%s_%sPhi", features[i].c_str(), trk_types.c_str());
+	    sprintf(histname, "h1d_before_Corrections_%s_%sPhi", features[i].c_str(), trk_types[j].c_str());
 	    std::string histname_str(histname);
 	    TH1D* hist = (TH1D*)m_HistsCollection[histname_str];
 	    for(int ii = 0; ii < phiBins; ++ii)

@@ -2,6 +2,7 @@
 #define STV0TRKINFO_H
 //#include "StMuDSTMaker/COMMON/StMuTrack.h"
 #include "TChain.h"
+#include "TVector3.h"
 #include "TVector2.h"
 #include "TLeaf.h"
 #include "constants.h"
@@ -33,8 +34,7 @@ struct StV0TrkInfo{// nHits
 	prmatch_dau2 = chain->GetLeaf("fW0s.mDau2PrMatchW0")->GetValue(idx);
         dca1to2 = chain->GetLeaf("fW0s.mDca1to2W0")->GetValue(idx);
 
-        TVector3 phi3;
-        phi3.Set(px, py, pz); 
+        TVector3 phi3(px, py, pz);
         phi = phi3.Phi();
 	SetCharge(charge); // TODO: For Lambda Only
 

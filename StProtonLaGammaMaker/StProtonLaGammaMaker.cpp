@@ -219,8 +219,8 @@ void StProtonLaGammaMaker::reconstructSubEventPlaneWithPhiWeightHelper(std::map<
     TVector2 mQ, mQ1, mQ2; // lack mLambdaPhi;
 
     vector< pair<double, StPriTrkInfo> > trkVec;
-    const vector<StPriTrkInfo> vecPriTrks = evtInfo.VecPriTrks(); 
-    const vector<StV0TrkInfo> vecLambdaTrks = evtInfo.VecBetaTrks();
+    const vector<StPriTrkInfo>& vecPriTrks = evtInfo.VecPriTrks(); 
+    const vector<StV0TrkInfo>& vecLambdaTrks = evtInfo.VecBetaTrks();
     int Day = evtInfo.Day();
     double PVZ = evtInfo.Vz();
     double EWeight = evtInfo.EWeight(); 
@@ -901,13 +901,13 @@ void StProtonLaGammaMaker::fillBetaHists(std::map<std::string, TH1*>& histMap, c
 
 	// Fill the before correction phi histograms
         std::string name = getCorrectionHistName("Beta", eta, PVZ, charge, 'b'); 
-        ((TH1D*)(histMap[name])->Fill(phi, EWeight);
+        ((TH1D*)(histMap[name]))->Fill(phi, EWeight);
 
         // Fill the correction term histograms
         name = getCorrectionHistName("Beta", eta, PVZ, charge, 'c');
 	for(Int_t kk = 0; kk < order; ++kk){
-	    ((TProfile2D*)(histMap[name])->Fill(2 * kk + 1, Day2, cos(kk * phi + phi), EWeight);
-	    ((TProfile2D*)(histMap[name])->Fill(2 * kk + 2, Day2, sin(kk * phi + phi), EWeight);
+	    ((TProfile2D*)(histMap[name]))->Fill(2 * kk + 1, Day2, cos(kk * phi + phi), EWeight);
+	    ((TProfile2D*)(histMap[name]))->Fill(2 * kk + 2, Day2, sin(kk * phi + phi), EWeight);
 	}
     }
 }
