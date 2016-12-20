@@ -38,5 +38,4 @@
     cout << "pt = 2.6, eff = " << eMaker_BetaBar->GetEfficiency(1, 2.6) << endl;
     cout << "pt = 10.6, eff = " << eMaker_BetaBar->GetEfficiency(1, 10.6) << endl;
 
-
 }

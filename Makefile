@@ -4,6 +4,8 @@ dist:
 	tar -cvzf plambda_auau200GeVrun11.tar.gz include StEvtCuts StEvtInfo StMixingBuffer StPriETrkCuts StPriKTrkCuts StPriPiTrkCuts StPriPTrkCuts StPriTrkCuts StPriTrkGeneralCuts StCorrelationMaker StProtonLaGammaMaker StRefMultCorr StV0TrkCuts compile.C *dat Makefile
 
 clean:
-	rm -rf *tar.gz */*.so */*.d
+	rm -rf *tar.gz */*.so */*.d */AutoDict* */*pcm
 test:
 	root -l compile.C\(1\)
+
+.PHONY: test

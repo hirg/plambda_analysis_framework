@@ -5,10 +5,11 @@
 #include <cstdio>
 #include "TLeaf.h"
 #include "../StCorrelationMaker/StCorrelationMaker.h"
-#include "StEffMaker.h"
+#include "../include/StEffMaker.h"
 #include "../StEvtInfo/StEvtInfo.h"
 #include "../StPriTrkCuts/StPriTrkCuts.h"
 #include "../StV0TrkCuts/StV0TrkCuts.h"
+#include "TProfile2D.h"
 #include <map>
 class StProtonLaGammaMaker: public StCorrelationMaker{
     public:
@@ -44,7 +45,7 @@ class StProtonLaGammaMaker: public StCorrelationMaker{
         virtual void computeCorrelatorsHelper(std::map<std::string, TH1*>& histMap, const StEvtInfo& evtInfo, TVector2 shiftedepphi_full);
 
         virtual void saveWeights0File(std::map<std::string, TH1*>&);
-        virtual void saveWeights1File(std::map<std::string, TH1*>&){}
+        virtual void saveWeights1File(std::map<std::string, TH1*>&);
         virtual void saveWeights2File(std::map<std::string, TH1*>&){}
 };
 
@@ -83,10 +84,10 @@ inline
 void StProtonLaGammaMaker::saveWeights1File(map<string, TH1*>& histmap){
     TFile* weights1File = GetWeights1File();
     weights1File->cd();
-    ((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_EastEP"])->Write();
-    ((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_WestEP"])->Write();
-    ((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_EastEP"])->Write();
-    ((TProfile2D*)histMap["prof2_XOrder_YDay_ZCorrectionTerm_WestEP"])->Write();
+    ((TProfile2D*)histmap["prof2_XOrder_YDay_ZCorrectionTerm_EastEP"])->Write();
+    ((TProfile2D*)histmap["prof2_XOrder_YDay_ZCorrectionTerm_WestEP"])->Write();
+    ((TProfile2D*)histmap["prof2_XOrder_YDay_ZCorrectionTerm_EastEP"])->Write();
+    ((TProfile2D*)histmap["prof2_XOrder_YDay_ZCorrectionTerm_WestEP"])->Write();
 }
 
 inline

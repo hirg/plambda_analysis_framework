@@ -7,13 +7,10 @@ R__LOAD_LIBRARY(StEvtCuts/StEvtCuts.cpp++)
 R__LOAD_LIBRARY(StV0TrkCuts/StV0TrkCuts.cpp++)
 R__LOAD_LIBRARY(StCorrelationMaker/StCorrelationMaker.cpp++)
 R__LOAD_LIBRARY(StProtonLaGammaMaker/StProtonLaGammaMaker.cpp++)
-R__LOAD_LIBRARY(StProtonLaGammaMaker/StEffMaker.h++)
-R__LOAD_LIBRARY(StProtonLaGammaMaker/StErfEffMaker.h++)
-R__LOAD_LIBRARY(StProtonLaGammaMaker/StTpcTofEffMaker.h++)
+R__LOAD_LIBRARY(include/StEffMaker.h++)
+R__LOAD_LIBRARY(include/StErfEffMaker.h++)
+R__LOAD_LIBRARY(include/StTpcTofEffMaker.h++)
 
-#include "StRefMultCorr/StRefMultCorr.h"
-#include "StProtonLaGammaMaker/StErfEffMaker.h"
-#include "StProtonLaGammaMaker/StTpcTofEffMaker.h"
 #include "StRefMultCorr/StRefMultCorr.h"
 #include "StPriTrkCuts/StPriTrkCuts.h"
 #include "StPriTrkGeneralCuts/StPriTrkGeneralCuts.h"
@@ -23,9 +20,9 @@ R__LOAD_LIBRARY(StProtonLaGammaMaker/StTpcTofEffMaker.h++)
 #include "StV0TrkCuts/StV0TrkCuts.h"
 #include "StCorrelationMaker/StCorrelationMaker.h"
 #include "StProtonLaGammaMaker/StProtonLaGammaMaker.h"
-#include "StProtonLaGammaMaker/StEffMaker.h"
-#include "StProtonLaGammaMaker/StErfEffMaker.h"
-#include "StProtonLaGammaMaker/StTpcTofEffMaker.h"
+#include "include/StEffMaker.h"
+#include "include/StErfEffMaker.h"
+#include "include/StTpcTofEffMaker.h"
 void compile(int cen, string option="test"){
 
     /*

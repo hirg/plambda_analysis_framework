@@ -6,7 +6,7 @@
 #include "TChain.h"
 #include "TObject.h"
 #include "TLeaf.h"
-#include "../StProtonLaGammaMaker/StEffMaker.h"
+#include "../include/StEffMaker.h"
 #include "../StEvtCuts/StEvtCuts.h"
 #include "../StEvtInfo/StEvtInfo.h"
 #include <map>

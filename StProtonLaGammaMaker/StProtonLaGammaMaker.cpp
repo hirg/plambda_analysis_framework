@@ -396,7 +396,7 @@ void StProtonLaGammaMaker::reconstructShiftedSubEventPlaneHelper(std::map<std::s
     }
 
     // Full event plane before correction
-    ((TH1F*)histMap["h1f_before_Flattened_FullEPPhi"])->Fill(UnshiftedTPCEPPhi_Full, EWeight);
+    ((TH1F*)histMap["h1f_before_Flattened_FullEPPhi"])->Fill(SubEPShiftedTPCEPPhi_full, EWeight);
     // Event resolution histogram
     ((TProfile*)histMap["profile_eventplane_resolution"])->Fill(1, 100 * cos(2 * (ShiftedTPCEPPhi_east - ShiftedTPCEPPhi_west)), EWeight);
     //((TProfile*)histMap["profile_eventplane_resolution_noEW"])->Fill(1, 100 * cos(2 * (ShiftedTPCEPPhi_east - ShiftedTPCEPPhi_west)));
