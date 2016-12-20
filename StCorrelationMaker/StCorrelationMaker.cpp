@@ -102,7 +102,7 @@ void StCorrelationMaker::ReconstructEventPlaneWithPhiWeightCorrection(){
 	reconstructSubEventPlaneWithPhiWeightHelper(m_HistsCollection, evtInfo);
     }
 
-    saveWeights1File(m_HistsCollection);
+    saveWeights1File(m_HistsCollection); // Correction histograms for raw east/west/full event planes 
 }
 
 void StCorrelationMaker::ReconstructShiftedSubEventPlane(){

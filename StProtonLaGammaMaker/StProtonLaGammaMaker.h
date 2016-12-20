@@ -86,8 +86,7 @@ void StProtonLaGammaMaker::saveWeights1File(map<string, TH1*>& histmap){
     weights1File->cd();
     ((TProfile2D*)histmap["prof2_XOrder_YDay_ZCorrectionTerm_EastEP"])->Write();
     ((TProfile2D*)histmap["prof2_XOrder_YDay_ZCorrectionTerm_WestEP"])->Write();
-    ((TProfile2D*)histmap["prof2_XOrder_YDay_ZCorrectionTerm_EastEP"])->Write();
-    ((TProfile2D*)histmap["prof2_XOrder_YDay_ZCorrectionTerm_WestEP"])->Write();
+    ((TProfile2D*)histmap["prof2_XOrder_YDay_ZCorrectionTerm_FullEP"])->Write();
 }
 
 inline
